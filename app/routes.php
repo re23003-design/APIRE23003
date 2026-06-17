@@ -1,27 +1,29 @@
 <?php
-
 declare(strict_types=1);
 
-use App\Application\Actions\User\ListUsersAction;
-use App\Application\Actions\User\ViewUserAction;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
-use Slim\Interfaces\RouteCollectorProxyInterface as Group;
+
+// Forzamos la carga de los controladores para evitar el error 500 de clase no encontrada
+require_once __DIR__ . '/Controllers/VehiculoController.php';
+require_once __DIR__ . '/Controllers/MarcaController.php';
+
+use App\Controllers\VehiculoController;
+use App\Controllers\MarcaController;
 
 return function (App $app) {
-    $app->options('/{routes:.*}', function (Request $request, Response $response) {
-        // CORS Pre-Flight OPTIONS Request Handler
-        return $response;
-    });
 
-    $app->get('/', function (Request $request, Response $response) {
-        $response->getBody()->write('Hello world!');
-        return $response;
-    });
+    // 1. GET /vehiculos - Listar todos usando el Controlador
+    $app->get('/vehiculos', [VehiculoController::class, 'VerTodos']);
 
-    $app->group('/users', function (Group $group) {
-        $group->get('', ListUsersAction::class);
-        $group->get('/{id}', ViewUserAction::class);
-    });
+    // 2. POST /vehiculos - Guardar nuevo usando el Controlador
+    $app->post('/vehiculos', [VehiculoController::class, 'Insertar']);
+
+    // 3. POST /marcas - Guardar nueva usando el Controlador
+    $app->post('/marcas', [MarcaController::class, 'Insertar']);
+
+    // 4. GET /marcas/{id} - Buscar una específica usando el Controlador
+    $app->get('/marcas/{id}', [MarcaController::class, 'VerPorId']);
+
 };

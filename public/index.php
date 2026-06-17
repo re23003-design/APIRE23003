@@ -37,6 +37,7 @@ $container = $containerBuilder->build();
 // Instantiate the app
 AppFactory::setContainer($container);
 $app = AppFactory::create();
+//$app->setBasePath('/APIRE23003');
 $callableResolver = $app->getCallableResolver();
 
 // Register middleware
